@@ -1,0 +1,128 @@
+# config.yaml
+
+# Allgemeine Einstellungen
+run_settings:
+  dataset_name: "EdgeIIoT" #"CICIoT"
+  # Basisverzeichnis für alle Ergebnisse dieses Lauftyps (z.B. qat_modelle)
+  results_base_dir: "results/qat_runs"
+  device_str: "auto"  # "auto", "cuda", "cpu"
+  # Name für die Logger-Instanz, die von der Pipeline verwendet wird
+  logger_instance_name: "qat_pipeline_from_config"
+  logger_level: "INFO" # Oder "DEBUG" für ausführlichere Logs
+
+# Datenparameter
+data_params:
+  # Absoluter Pfad oder relativ zum Projektstamm (project_root in der Setup-Zelle)
+  npz_file_path: "/home/jovyan/TenSEAL_projects/ciciot_dataset_all.npz"
+  # Falls relativ zum Projektstamm (FHE_athens/): "data/processed/ciciot_dataset_all.npz"
+
+  # Einstellungen für DataLoader (wenn use_train_loader_for_batches = true ist in #Trainingsparameter)
+  dataloader_batch_size: 64
+
+  # Subset-Training
+  use_subset_training: false
+  subset_fraction: 0.05      # Wird nur wirksam, wenn use_subset_training: true
+
+# Modellparameter (spezifisch für QATPrunedSimpleNet)
+model_params:
+  type: "QATPrunedSimpleNet"
+  n_hidden: 100
+  
+  # Quantisierung
+  quantization_bits: 2
+  # Unstrukturiertes Pruning
+  unpruned_neurons: 16    # (32, 16, 8, 4 aktive verbindungen pro neuron)  (5920, 2960, 1480, 740 aktive verbindungen insgesamt für EdgeIIoT)  (5600, 2800, 1400, 700 aktive verbindungen insgesamt für CICIoT)
+  pbt_layers: ["fc1"]  # Wendet PBT auf Layer 1 und 2 an, "fc1", "fc2", "fc3" None
+  
+  # Drop-out
+  dropout:
+    rate1: 0 # 0.2  # Dropout-Rate nach der ersten ReLU. 0.0 für kein Dropout.
+    rate2: 0 # 0.2  # Dropout-Rate nach der zweiten ReLU. 0.0 für kein Dropout.
+  # Optionale Parameter für Brevitas Layer, falls benötigt
+  qlinear_bias: True
+  qidentity_return_quant_tensor: True
+  qrelu_return_quant_tensor: True
+
+
+# Trainingsparameter
+training_params:
+  num_epochs: 150              # EPOCHS
+  manual_batch_size: 1        # Wird ignoriert, wenn use_train_loader_for_batches: true
+  use_train_loader_for_batches: true
+  learning_rate: 0.01         # Anfangs-Lernrate
+
+  # Strukturiertes Pruning (besser für FHE geeignet)
+  neuron_pruning:
+    enable: true             # an/aus
+    run_at_epoch: 25          # Pruning nach dieser Epoche    (32, 16, 8, 4) unpruned weights in unstructured pruning.
+    pruning_steps: 1          # Anzahl der Schritte (z.B. 20, 30, 40)
+    pruning_interval: 10
+    
+    pruning_ratio_fc1: 0.74   # % der fc1-Neuronen entfernen (0.55, 0.74, 0.85, 0.92)  (45, 26, 15, 8 aktive neuronen pro layer für EdgeIIoT)               (46, 27, 15, 8 aktive neuronen pro layer für CICIoT)    (0.55, 0.78, 0.89, 0.94)
+    pruning_ratio_fc2: 0.70   # % der fc2-Neuronen entfernen (0.55, 0.74, 0.85, 0.92)  (5850, 2886, 1500, 744 aktive verbindungen insgesamt für EdgeIIoT)   (5566, 2754, 1350, 664 aktive verbindungen insgesamt für EdgeIIoT)
+    
+  criterion:
+    name: "CrossEntropyLoss"      # "FocalLoss" oder "CrossEntropyLoss"
+    focal_loss_alpha: 0.25        # Nur für FocalLoss
+    focal_loss_gamma: 2.0         # Nur für FocalLoss
+    reduction: "mean"             # 'mean', 'sum', 'none'
+
+    calculate_class_weights: true # true, um Gewichte automatisch zu berechnen
+    # class_weights: [0.8, 1.1, ...]  # Alternative: Manuelle Liste von Gewichten (Länge = num_classes)
+                                      # Wenn dies gesetzt ist und calculate_class_weights=false, werden diese verwendet.
+                                      # Wenn calculate_class_weights=true ist, werden diese ignoriert
+
+    # Optionen für automatische Gewichtsberechnung (wenn calculate_class_weights: true)
+    class_weight_calculation_method: "inverse_frequency"  # "inverse_frequency" oder "effective_number"
+    class_weight_beta: 0.999          # Nur für "effective_number" (z.B. 0.9, 0.99, 0.999, 0.9999)
+    auto_weight_overall_scale: 1.0    # Optional: Skaliert die automatisch berechneten Gewichte
+
+
+  optimizer:
+    name: "AdamW"
+    weight_decay: 0.01
+
+  scheduler:
+    name: "ReduceLROnPlateau"          # Optionen: "ReduceLROnPlateau", "StepLR", oder null/None/"null" für keinen
+    # Parameter für den jeweiligen Scheduler in einem 'params' Unter-Dictionary
+    params:
+      # Parameter für ReduceLROnPlateau
+      factor: 0.25                 # Faktor, um den die LR reduziert wird. new_lr = lr * factor
+      patience: 7 # 10                # Anzahl Epochen ohne Verbesserung, bevor LR reduziert wird
+      min_lr: 0.00001             # Untergrenze für die Lernrate
+      #verbose: true               # Gibt eine Meldung aus, wenn LR angepasst wird
+      # Parameter für StepLR (nur relevant, wenn name: "StepLR")
+      # step_size: 10               # Nach wie vielen Epochen die LR angepasst wird
+      # gamma: 0.6                  # Multiplikativer Faktor zur LR-Anpassung
+
+  early_stopping:
+    patience: 25                  # Geduld für Early Stopping
+    min_delta: 0.00001
+
+
+# Evaluierungsparameter
+evaluation_params:
+  # Parameter für die Evaluierung des PyTorch-Modells (Plain Model)
+  pytorch_model_eval:
+    run_eval: true                     # true, um PyTorch-Modell zu evaluieren, false zum Überspringen
+    n_samples: null                    # Anzahl der Samples für Plain model, null für alle Testdaten
+
+  # Parameter für die Evaluierung des FHE-Modells
+  fhe_model_eval:
+    run_fhe_pipeline: true             # true, um FHE-Kompilierung UND Evaluierung zu versuchen
+    compilation_sample_size: 128       # Anzahl Samples für die FHE-Kompilierung
+    p_error: null                      # steuert die erlaubte wahrscheinliche Fehlergenauigkeit für das kompilierte model. null ist default von concrete (2e-40), 0.01 erlaubt 1% fehler im lookup table
+    run_fhe_eval: true                 # true, um nach erfolgreicher Kompilierung FHE zu evaluieren
+    # 'mode' steuert, welche n_samples verwendet werden. Wenn 'mode' nicht 'simulate' oder 'execute' ist,
+    # wird der Code einen Fallback verwenden und eine Warnung loggen.
+    mode: "simulate"                   # Optionen: "simulate", "execute"
+    n_samples_simulate: 1000           # Anzahl für Simulation
+    n_samples_execute: 0               # Setze auf >0, um execute-Modus zu testen
+
+# Weights & Biases Einstellungen
+wandb_settings:
+  project_name: "Concrete_QAT_FHE"      # Dein Projektname in wandb (Beispiel angepasst)
+  entity: "paul_wandb"                        # Dein wandb Benutzername oder Teamname (leer/null für default)
+  run_name_prefix: "cic_qat_run"      # Ein Präfix für den Laufnamen
+  log_artifacts: true                 # true, um Modell, Plots und Logs als Artefakte zu speichern
+  mode: "online"                      # "online", "offline", oder "disabled"

@@ -1,0 +1,29 @@
+dataset_path: "/home/jovyan/TenSEAL_projects/ciciot_dataset_all.npz" # Oder ciciot  edgeiiot
+experiment_name: "EdgeIIoT_XGB_FHE_Evaluation_final" 
+
+run_xgboost: true
+xgboost_params:
+  grid_search_params:
+    n_bits: 3 #[8, 9, 10] # Ihre gewünschten Bits
+    max_depth: 7 #[6, 7, 8]
+    n_estimators: 7 #[5, 6, 7]
+  # Hier könnten auch optimale Parameter für einen direkten Lauf festgelegt werden
+  optimal_params: {'max_depth': 7, 'n_bits': 3, 'n_estimators': 7} # config fuer patras paper
+
+  # FHE evaluation
+  fhe_evaluation_params:
+    run_fhe_eval: true
+    n_samples_simulate: 0        
+    n_samples_execute: 100      
+    log_inference_time: true
+
+    
+
+run_logistic_regression: false
+logistic_regression_params:
+  grid_search_params:
+    C: [0.001, 0.5, 0.9, 1.0]
+    n_bits: [7, 10, 13, 14]
+    solver: ["newton-cg", "sag", "saga", "lbfgs"] # newton-cg kann lange dauern
+    multi_class": ["auto"]
+  # optimal_params: {"C": 0.001, "n_bits": 14, "solver": "newton-cg", "multi_class": "auto"}

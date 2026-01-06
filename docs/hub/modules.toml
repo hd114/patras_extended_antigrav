@@ -1,0 +1,68 @@
+[entry_points]
+items = [
+  { path = "Makefile", notes = "Primary local command entry point (make targets)" },
+  { path = "tools/snapshot.py", notes = "Updates snapshot metadata and the Commands AUTO block" },
+  { path = "tools/check_snapshot_up_to_date.sh", notes = "Non-mutating snapshot drift check used by snapshot-check" },
+  { path = "tools/validate_snapshot.py", notes = "Validates snapshot formatting contract" },
+  { path = "tools/export_handoff_bundle.sh", notes = "Deterministic tracked-only handoff bundle export (make handoff)" },
+  { path = ".github/workflows/ci.yml", notes = "CI entry point for snapshot and PR WI enforcement" }
+]
+
+[how_to_run]
+items = [
+  { command = "bash tools/install_git_hooks.sh", notes = "Install local git hooks (pre-push)" },
+  { command = "make validate", notes = "Validate snapshot formatting contract" },
+  { command = "make snapshot-check", notes = "Non-mutating drift check and validation (recommended default gate)" },
+  { command = "make snapshot", notes = "Regenerate snapshot content (commit required if it changes)" },
+  { command = "make handoff", notes = "Create deterministic tracked-only handoff_bundle.zip" }
+]
+
+[[modules]]
+name = "docs/hub"
+path = "docs/hub/"
+responsibility = "Authoritative workflow documentation and onboarding artifacts"
+
+[[modules]]
+name = "docs/work_items"
+path = "docs/work_items/"
+responsibility = "Work Items (system of record for work tracking)"
+
+[[modules]]
+name = "docs/adr"
+path = "docs/adr/"
+responsibility = "Architecture Decision Records (decision log)"
+
+[[modules]]
+name = "docs/auto"
+path = "docs/auto/"
+responsibility = "Generated documentation (module graph, task graph, inventory)"
+
+[[modules]]
+name = "tools"
+path = "tools/"
+responsibility = "Generators and quality gates (snapshot, drift checks, handoff)"
+
+[[modules]]
+name = ".github/workflows"
+path = ".github/workflows/"
+responsibility = "CI workflows (snapshot gates, PR WI enforcement, hygiene checks)"
+
+[[config_files]]
+path = "Makefile"
+purpose = "Local commands and workflow targets"
+
+[[config_files]]
+path = ".github/workflows/ci.yml"
+purpose = "CI: snapshot gates and PR checks"
+
+[[config_files]]
+path = "docs/hub/modules.toml"
+purpose = "Inputs for repo inventory generation"
+
+[dependencies]
+language_and_runtime = "Python 3.11"
+package_manager = "pip (via venv/conda is acceptable)"
+core_libraries = ["Python stdlib"]
+
+[build_artifacts_excluded]
+items = ["venv", ".venv", "conda envs", "node_modules", "caches", ".ipynb_checkpoints", "large data", "models", "handoff_bundle.zip", "repo.zip"]

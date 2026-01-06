@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches: [ main ]
+
+jobs:
+  pr-work-item:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require WI reference in PR title or body
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+
+          echo "Checking for Work Item reference in PR title or body..."
+          echo "Expected pattern: WI-0000 (WI- followed by 4 digits)"
+
+          TITLE="${PR_TITLE:-}"
+          BODY="${PR_BODY:-}"
+
+          if echo "${TITLE}" | grep -E 'WI-[0-9]{4}' >/dev/null 2>&1; then
+            echo "OK: Found WI reference in PR title"
+            exit 0
+          fi
+
+          if echo "${BODY}" | grep -E 'WI-[0-9]{4}' >/dev/null 2>&1; then
+            echo "OK: Found WI reference in PR body"
+            exit 0
+          fi
+
+          echo "ERROR: No Work Item reference found."
+          echo "Add something like 'WI-0008' to the PR title or description."
+          exit 1
+
+  snapshot-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Reject tracked notebook checkpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -E '(^|/)\.ipynb_checkpoints(/|$)' >/dev/null 2>&1; then
+            echo "ERROR: Tracked .ipynb_checkpoints detected. Remove them from git and ensure they are gitignored."
+            echo "Tracked entries:"
+            git ls-files | grep -E '(^|/)\.ipynb_checkpoints(/|$)' || true
+            exit 1
+          fi
+          echo "OK: no tracked .ipynb_checkpoints"
+
+      - name: Run snapshot quality gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          make snapshot-check

@@ -1,0 +1,29 @@
+name: Work item
+description: Create a work item for this repository or a consuming project
+title: "WI-XXXX: "
+labels: ["work-item"]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What must be achieved
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Concrete conditions for done
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Non-goals
+      description: What is explicitly out of scope
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: Tests or procedures used to verify the change

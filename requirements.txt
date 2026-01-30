@@ -1,0 +1,15 @@
+torch>=2.0.0
+torchvision
+brevitas>=0.9.0
+concrete-ml>=1.0.0
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+tqdm
+pyyaml
+wandb
+pytest
+black
+isort

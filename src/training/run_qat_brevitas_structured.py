@@ -43,6 +43,7 @@ from src.utils.logger import (
     log_training_summary
 )
 from src.utils.config_loader import load_config
+from src.utils.reproducibility import set_global_seed
 from src.data.edge_iiot_dataset import (
     EdgeIIoTDataset,
     load_edgeiiot_data
@@ -408,6 +409,11 @@ def run_qat_training_pipeline(config_path: str = "config.yaml") -> Optional[str]
         return None
 
     run_cfg = config.get("run_settings", {})
+    
+    # --- Repoducibility ---
+    seed = run_cfg.get("random_seed", 42)
+    set_global_seed(seed)
+    
     data_cfg = config.get("data_params", {})
     model_cfg = config.get("model_params", {})
     train_cfg = config.get("training_params", {})

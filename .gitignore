@@ -38,7 +38,7 @@ htmlcov/
 
 # Large artifacts (adjust as needed)
 data/
-models/
+/models/
 
 # Repo-local artifacts
 handoff_bundle.zip

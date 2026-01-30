@@ -1,9 +1,3 @@
-import sys
-import os
-# Add project root to path if running from src/
-if os.path.basename(os.getcwd()) == "src":
-    sys.path.append("..")
-
 import argparse
 import torch
 from src.utils.logger import setup_logger

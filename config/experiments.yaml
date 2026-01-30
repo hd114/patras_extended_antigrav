@@ -1,0 +1,355 @@
+experiments:
+  # Structured Pruning (EdgeIIoT) w/ k=10(p4), 18(p8), 30(p16), 51(p32) and bits 3,5,7
+  # Ref: experiment_runner.py lines 291-361
+
+  # p4 (k=10)
+  - name_suffix: "qb3_p4_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 3
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.90 # 1 - 10/100
+        pruning_ratio_fc2: 0.90
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb5_p4_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 5
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.90
+        pruning_ratio_fc2: 0.90
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb7_p4_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 7
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.90
+        pruning_ratio_fc2: 0.90
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  # p8 (k=18)
+  - name_suffix: "qb3_p8_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 3
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.82 # 1 - 18/100
+        pruning_ratio_fc2: 0.82
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb5_p8_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 5
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.82
+        pruning_ratio_fc2: 0.82
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb7_p8_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 7
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.82
+        pruning_ratio_fc2: 0.82
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  # p16 (k=30)
+  - name_suffix: "qb3_p16_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 3
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.70 # 1 - 30/100
+        pruning_ratio_fc2: 0.70
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb5_p16_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 5
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.70
+        pruning_ratio_fc2: 0.70
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb7_p16_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 7
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.70
+        pruning_ratio_fc2: 0.70
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  # p32 (k=51) -> Typo in code said 57 comment? Code said (51, 32). using 51.
+  - name_suffix: "qb3_p32_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 3
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.49 # 1 - 51/100
+        pruning_ratio_fc2: 0.49
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb5_p32_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 5
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.49
+        pruning_ratio_fc2: 0.49
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
+
+  - name_suffix: "qb7_p32_structured_E"
+    run_settings:
+      dataset_name: "EdgeIIoT"
+    data_params:
+      npz_file_path: "data/processed/edgeiiot_dataset_all.npz"
+    model_params:
+      quantization_bits: 7
+      n_hidden: 100
+      unpruned_neurons: 0
+      pbt_layers: []
+    training_params:
+      num_epochs: 150
+      neuron_pruning:
+        enable: true
+        pruning_ratio_fc1: 0.49
+        pruning_ratio_fc2: 0.49
+        run_at_epoch: 25
+        pruning_steps: 1
+        pruning_interval: 1
+    evaluation_params:
+      pytorch_model_eval:
+        run_eval: true
+        n_samples: null
+      fhe_model_eval:
+        run_fhe_pipeline: true
+        run_fhe_eval: true
+        mode: "simulate"
+        n_samples_simulate: 1000
